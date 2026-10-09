@@ -3,46 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sulthan TV - Direct Player</title>
+    <title>Sulthan TV - Direct Movie Player</title>
     <style>
-        body { 
+        body, html { 
             background: #000; 
             color: #fff; 
-            font-family: sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
             margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            font-family: sans-serif;
         }
-        .box { text-align: center; background: #111; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
-        input { padding: 12px; width: 250px; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff; font-size: 16px; outline: none; }
-        button { padding: 12px 20px; background: #e50914; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-left: 5px; }
+        .search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #111;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        .search-box { 
+            background: #1e1e1e; 
+            padding: 30px; 
+            border-radius: 10px; 
+            text-align: center; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8); 
+        }
+        input { 
+            padding: 12px; 
+            width: 250px; 
+            border-radius: 4px; 
+            border: 1px solid #444; 
+            background: #2c2c2c; 
+            color: #fff; 
+            font-size: 16px; 
+            outline: none; 
+        }
+        button { 
+            padding: 12px 20px; 
+            background: #e50914; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-left: 5px; 
+        }
+        h2 { color: #e50914; margin-bottom: 15px; }
+        .player-container { 
+            width: 100%; 
+            height: 100%; 
+            background: #000; 
+            display: none; 
+        }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>Sulthan TV 2Embed Direct</h2>
-        <p>Enter Movie ID to Watch Directly</p>
-        <input type="text" id="movieId" placeholder="Enter TMDB ID (e.g. 329)">
-        <button onclick="playMovie()">Play Now</button>
+
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box">
+            <h2>Sulthan TV Player</h2>
+            <input type="text" id="movieId" placeholder="Enter Movie ID (e.g. 56)">
+            <button onclick="playMovie()">Play</button>
+        </div>
+    </div>
+
+    <div class="player-container" id="playerContainer">
+        <iframe id="embedFrame" src="" allowfullscreen></iframe>
     </div>
 
     <script>
-        // URL-ൽ ഓട്ടോമാറ്റിക്കായി ID ഉണ്ടെങ്കിൽ നേരെ പ്ലെയറിലേക്ക് പോകും
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
-        if (id) {
-            window.location.href = "https://www.2embed.cc/embed/" + id;
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+
+        if (movieId) {
+            startPlayer(movieId);
         }
 
         function playMovie() {
-            const val = document.getElementById('movieId').value.trim();
-            if (val) {
-                // ഡൊമൈൻ ലിങ്കിലേക്ക് ഐഡി ചേഞ്ച് ചെയ്ത് നേരെ 2Embed പ്ലെയറിലേക്ക് വിടും
-                window.location.href = "https://www.2embed.cc/embed/" + val;
+            const id = document.getElementById('movieId').value.trim();
+            if (id) {
+                window.history.pushState({}, '', '?id=' + id);
+                startPlayer(id);
             }
+        }
+
+        function startPlayer(id) {
+            document.getElementById('searchOverlay').style.display = 'none';
+            document.getElementById('playerContainer').style.display = 'block';
+            document.getElementById('embedFrame').src = "https://www.2embed.cc/embed/" + id;
         }
     </script>
 </body>
